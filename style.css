@@ -5,7 +5,9 @@
 body {
     width: 100vw;
     height: 100vh;
-    background-color: rgba(132, 23, 88, 0.6);
+    margin: 0;
+    background: #2A7B9B;
+    background: linear-gradient(300deg, rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
 }
 
 main {
@@ -15,21 +17,14 @@ main {
     translate: -50% -50%;
     width: 300px;
     height: 530px;
+    background-color: black;
     border-radius: 25px;
     overflow: hidden;
-    border: 3px solid green;
+    border: 3px solid black;
 }
 
-.food {
-    width: 299%;
-    height: 100%;
-    background-color: black;
-    display: flex;
-    justify-content: space-between;
-}
-
-.food img {
-    /* width: 33.17%; */
+main img {
+    width: 100%;
     aspect-ratio: 9 / 16;
     object-fit: contain;
 }
