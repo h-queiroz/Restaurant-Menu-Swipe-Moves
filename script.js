@@ -68,6 +68,7 @@ document.body.addEventListener("mouseup", (event) => {
 
 
             // Updates Food Image
+            currentImg = 0;
             imgElement.src = imgLinks[currentFoodIndex][currentImg];
 
             initPosX = 0;
@@ -119,6 +120,7 @@ document.body.addEventListener("touchend", (event) => {
 
 
             // Updates Food Image
+            currentImg = 0;
             imgElement.src = imgLinks[currentFoodIndex][currentImg];
 
             initPosX = 0;
