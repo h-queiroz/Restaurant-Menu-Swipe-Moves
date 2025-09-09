@@ -6,26 +6,32 @@ let imgLinks = [
 ];
 
 let mainElement = document.querySelector("main");
-let imgElement = mainElement.children[0];
+let frontCardElement = mainElement.children[0];
+let frontCardImg = frontCardElement.children[0];
+let backCardElement = mainElement.children[1];
+let backCardImg = backCardElement.children[0];
+// let backupCardElement = mainElement.children[2];
+// let backupCardImg = backupCardElement.children[0];
+
 let currentFoodIndex = 0;
 let currentImg = 0;
-imgElement.src = imgLinks[currentFoodIndex][currentImg];
+frontCardImg.src = imgLinks[currentFoodIndex][currentImg];
 
 
 // Tap Event Listener
-mainElement.addEventListener("click", (event) => {
-
-    // If clicks to on the left half of the card
-    if(event.clientX < mainElement.offsetLeft){
-        if(--currentImg < 0)
-            currentImg = 2;
-    } else {
-        if(++currentImg > 2)
-            currentImg = 0;
-    }
-
-    imgElement.src = imgLinks[currentFoodIndex][currentImg];
-});
+// mainElement.addEventListener("click", (event) => {
+//
+//     // If clicks to on the left half of the card
+//     if(event.clientX < mainElement.offsetLeft){
+//         if(--currentImg < 0)
+//             currentImg = 2;
+//     } else {
+//         if(++currentImg > 2)
+//             currentImg = 0;
+//     }
+//
+//     frontCardImg.src = imgLinks[currentFoodIndex][currentImg];
+// });
 
 
 // Swipe Event Listener on Mouse
@@ -51,9 +57,13 @@ document.body.addEventListener("mouseup", (event) => {
                 if(deltaX > 0) {// Swipped LEFT
                     if(--currentFoodIndex < 0)
                         currentFoodIndex = 2;
+
+                    frontCardElement.style.animationName = "disappear-back";
                 } else {        // Swipped RIGHT
                     if(++currentFoodIndex > 2)
                         currentFoodIndex = 0;
+
+                    frontCardElement.style.animationName = "disappear-front";
                 }
 
             } else {
@@ -66,16 +76,56 @@ document.body.addEventListener("mouseup", (event) => {
 
             }
 
+            setTimeout(() => {
+                swap();
+            }, 350);
 
-            // Updates Food Image
-            currentImg = 0;
-            imgElement.src = imgLinks[currentFoodIndex][currentImg];
+        } else if (deltaX == 0 && deltaY == 0) { // If user simply clicks. I had to set this instead of the "click" event Listener cause even a slighty swipe triggers a "click" which is not what I want.
 
-            initPosX = 0;
-            initPosY = 0;
+            if(event.clientX < mainElement.offsetLeft){
+                if(--currentImg < 0)
+                    currentImg = 2;
+            } else {
+                if(++currentImg > 2)
+                    currentImg = 0;
+            }
+
+            frontCardImg.src = imgLinks[currentFoodIndex][currentImg];
+        } else { // Reposition the card
+            frontCardElement.style.transform = "rotate(0) translate(0)";
         }
+
+        initPosX = 0;
+        initPosY = 0;
     }
 });
+
+// Swipe Event Animation on Mouse Move
+mainElement.addEventListener("mousemove", (event) => {
+    if(initPosX != 0 && initPosY != 0) {
+        let deltaX = initPosX - event.clientX;
+        frontCardElement.style.transform = "rotate(" + (0.5 * -deltaX) + "deg) translate(" + (2.5 * -deltaX) + "px)";
+
+        // Dinamically change what is the food on the back card depending on the direction of the swipe
+        let backCardFoodIndex;
+        if(-deltaX < 0){
+            backCardFoodIndex = (currentFoodIndex - 1);
+
+            if(currentFoodIndex == 0)
+                backCardFoodIndex = 2;
+
+        } else {
+            backCardFoodIndex = (currentFoodIndex + 1);
+
+            if(currentFoodIndex == 2)
+                backCardFoodIndex = 0;
+        }
+
+        currentImg = 0;
+        backCardImg.src = imgLinks[backCardFoodIndex][currentImg];
+    }
+});
+
 
 
 // Swipe Event Listener on Touch
@@ -89,11 +139,6 @@ document.body.addEventListener("touchend", (event) => {
         let deltaX = initPosX - event.changedTouches[0].clientX;
         let deltaY = initPosY - event.changedTouches[0].clientY;
 
-        console.log("DeltaX: " + deltaX);
-        console.log("DeltaY: " + deltaY);
-        console.log("Absolute DeltaX: " + Math.abs(deltaX));
-        console.log("Absolute DeltaY: " + Math.abs(deltaY));
-
         // Makes sure to don't work on a subtle swipe
         if(Math.abs(deltaX) > 20 || Math.abs(deltaY) > 20) {
 
@@ -103,9 +148,13 @@ document.body.addEventListener("touchend", (event) => {
                 if(deltaX > 0) {// Swipped LEFT
                     if(--currentFoodIndex < 0)
                         currentFoodIndex = 2;
+
+                    frontCardElement.style.animationName = "disappear-back";
                 } else {        // Swipped RIGHT
                     if(++currentFoodIndex > 2)
                         currentFoodIndex = 0;
+
+                    frontCardElement.style.animationName = "disappear-front";
                 }
 
             } else {
@@ -118,13 +167,68 @@ document.body.addEventListener("touchend", (event) => {
 
             }
 
+            setTimeout(() => {
+                swap();
+            }, 350);
 
-            // Updates Food Image
-            currentImg = 0;
-            imgElement.src = imgLinks[currentFoodIndex][currentImg];
+        } else if (deltaX == 0 && deltaY == 0) {
 
-            initPosX = 0;
-            initPosY = 0;
+            if(event.clientX < mainElement.offsetLeft){
+                if(--currentImg < 0)
+                    currentImg = 2;
+            } else {
+                if(++currentImg > 2)
+                    currentImg = 0;
+            }
+
+            frontCardImg.src = imgLinks[currentFoodIndex][currentImg];
+        } else { // Reposition the card
+            frontCardElement.style.transform = "rotate(0) translate(0)";
         }
+
+        initPosX = 0;
+        initPosY = 0;
     }
 });
+
+
+// Swipe Event Animation on Touch Move
+mainElement.addEventListener("touchmove", (event) => {
+    event.preventDefault(); // Prevents window scroll
+    if(initPosX != 0 && initPosY != 0) {
+        let deltaX = initPosX - event.targetTouches[0].clientX;
+        frontCardElement.style.transform = "rotate(" + (0.5 * -deltaX) + "deg) translate(" + (2.5 * -deltaX) + "px)";
+
+        // Dinamically change what is the food on the back card depending on the direction of the swipe
+        let backCardFoodIndex;
+        if(-deltaX < 0){
+            backCardFoodIndex = (currentFoodIndex - 1);
+
+            if(currentFoodIndex == 0)
+                backCardFoodIndex = 2;
+
+        } else {
+            backCardFoodIndex = (currentFoodIndex + 1);
+
+            if(currentFoodIndex == 2)
+                backCardFoodIndex = 0;
+        }
+
+        currentImg = 0;
+        backCardImg.src = imgLinks[backCardFoodIndex][currentImg];
+    }
+});
+
+
+function swap() {
+    frontCardElement.remove();
+    frontCardElement = backCardElement;
+    frontCardImg = frontCardElement.children[0];
+    backCardElement = mainElement.children[1];
+    backCardImg = backCardElement.children[0];
+    backupCardElement = document.createElement("div");
+    backupCardElement.classList.add("card");
+    backupCardImg = document.createElement("img");
+    backupCardElement.appendChild(backupCardImg);
+    mainElement.appendChild(backupCardElement);
+}
