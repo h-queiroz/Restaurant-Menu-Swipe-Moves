@@ -11,6 +11,10 @@ let frontCardImg = frontCardElement.children[0];
 let backCardElement = mainElement.children[1];
 let backCardImg = backCardElement.children[0];
 
+let cartElement = document.querySelector("#cart");
+let cartIcon = cartElement.firstElementChild;
+let cartMenu = cartElement.children[1];
+
 let currentFoodIndex = 0;
 let currentImg = 0;
 frontCardImg.src = imgLinks[currentFoodIndex][currentImg];
@@ -64,11 +68,9 @@ document.body.addEventListener("mouseup", (event) => {
         } else if (deltaX == 0 && deltaY == 0) { // If user simply clicks. I had to set this instead of the "click" event Listener cause even a slighty swipe triggers a "click" which is not what I want.
 
             if(event.clientX < mainElement.offsetLeft){
-                console.log("left clicked");
                 if(--currentImg < 0)
                     currentImg = 2;
             } else {
-                console.log("right clicked");
                 if(++currentImg > 2)
                     currentImg = 0;
             }
@@ -208,5 +210,93 @@ function swap() {
     backupCardImg = document.createElement("img");
     backupCardImg.src = "foods/food1-1.jpg";
     backupCardElement.appendChild(backupCardImg);
-    mainElement.appendChild(backupCardElement);
+    // mainElement.appendChild(backupCardElement);
+    mainElement.insertBefore(backupCardElement, cartElement);
 }
+
+
+// If clicked on the shopping cart instead of the food card itself
+cartElement.addEventListener("mouseup", (event) => {
+    if(initPosX != 0 && initPosY != 0){
+        let deltaX = initPosX - event.clientX;
+        let deltaY = initPosY - event.clientY;
+
+        if (deltaX == 0 && deltaY == 0) {
+            event.stopPropagation();
+
+            showCartMenu();
+        }
+
+        initPosX = 0;
+        initPosY = 0;
+    }
+});
+
+
+function showCartMenu() {
+    mainElement.style.overflow = "hidden";
+
+    cartElement.style.padding = "350px";
+    cartElement.style.top = "-50px";
+    cartElement.style.right = "-180px";
+
+    cartIcon.style.opacity = "0";
+    setTimeout(() => {
+        cartIcon.style.display = "initial";
+
+        cartMenu.style.display = "flex";
+        cartMenu.style.opacity = "1";
+
+        cartElement.style.transition = "none";
+        cartElement.style.padding = "30px 15px";
+        cartElement.style.top = "0";
+        cartElement.style.right = "0";
+        cartElement.style.borderRadius = "0";
+        cartElement.style.width = mainElement.clientWidth + "px";
+        cartElement.style.height = mainElement.clientHeight + "px";
+    }, 500);
+}
+
+document.querySelector("#close-cart-btn").addEventListener("mouseup", (event) => {
+    event.stopPropagation();
+
+    hideCartMenu();
+
+    initPosX = 0;
+    initPosY = 0;
+});
+
+function hideCartMenu() {
+
+    cartElement.style.padding = "350px";
+    cartElement.style.top = "-50px";
+    cartElement.style.right = "-180px";
+    cartElement.style.borderRadius = "50%";
+    cartElement.style.width = "50px";
+    cartElement.style.height = "50px";
+
+    cartMenu.style.display = "none";
+
+    // I need this tiny timeout for the animation run properly
+    setTimeout(() => {
+        cartElement.style.transition = "0.5s all ease-in";
+
+        cartElement.style.padding = "0";
+        cartElement.style.top = "15px";
+        cartElement.style.right = "15px";
+
+        cartIcon.style.display = "block";
+        setTimeout(() => {
+            cartIcon.style.opacity = "1";
+
+            mainElement.style.overflow = "initial";
+        }, 500);
+
+    }, 50);
+
+}
+
+// Make it so it's not possible to slide by selecting the shopping cart
+cartElement.addEventListener("mousemove", (event) => {
+    event.stopPropagation();
+});
