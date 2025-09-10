@@ -10,29 +10,10 @@ let frontCardElement = mainElement.children[0];
 let frontCardImg = frontCardElement.children[0];
 let backCardElement = mainElement.children[1];
 let backCardImg = backCardElement.children[0];
-// let backupCardElement = mainElement.children[2];
-// let backupCardImg = backupCardElement.children[0];
 
 let currentFoodIndex = 0;
 let currentImg = 0;
 frontCardImg.src = imgLinks[currentFoodIndex][currentImg];
-
-
-// Tap Event Listener
-// mainElement.addEventListener("click", (event) => {
-//
-//     // If clicks to on the left half of the card
-//     if(event.clientX < mainElement.offsetLeft){
-//         if(--currentImg < 0)
-//             currentImg = 2;
-//     } else {
-//         if(++currentImg > 2)
-//             currentImg = 0;
-//     }
-//
-//     frontCardImg.src = imgLinks[currentFoodIndex][currentImg];
-// });
-
 
 // Swipe Event Listener on Mouse
 let initPosX = 0;
@@ -83,9 +64,11 @@ document.body.addEventListener("mouseup", (event) => {
         } else if (deltaX == 0 && deltaY == 0) { // If user simply clicks. I had to set this instead of the "click" event Listener cause even a slighty swipe triggers a "click" which is not what I want.
 
             if(event.clientX < mainElement.offsetLeft){
+                console.log("left clicked");
                 if(--currentImg < 0)
                     currentImg = 2;
             } else {
+                console.log("right clicked");
                 if(++currentImg > 2)
                     currentImg = 0;
             }
@@ -99,6 +82,7 @@ document.body.addEventListener("mouseup", (event) => {
         initPosY = 0;
     }
 });
+
 
 // Swipe Event Animation on Mouse Move
 mainElement.addEventListener("mousemove", (event) => {
@@ -171,17 +155,9 @@ document.body.addEventListener("touchend", (event) => {
                 swap();
             }, 350);
 
-        } else if (deltaX == 0 && deltaY == 0) {
-
-            if(event.clientX < mainElement.offsetLeft){
-                if(--currentImg < 0)
-                    currentImg = 2;
-            } else {
-                if(++currentImg > 2)
-                    currentImg = 0;
-            }
-
-            frontCardImg.src = imgLinks[currentFoodIndex][currentImg];
+        // I was going to set the same event for tap touching in the same way
+        // as in tap clicking, but for some reason, the "tap on touch" also triggers
+        // the "tap on click" that I set on mouseup, so only one of them is needed
         } else { // Reposition the card
             frontCardElement.style.transform = "rotate(0) translate(0)";
         }
@@ -226,9 +202,11 @@ function swap() {
     frontCardImg = frontCardElement.children[0];
     backCardElement = mainElement.children[1];
     backCardImg = backCardElement.children[0];
+    backCardImg.src = "foods/food1-1.jpg";
     backupCardElement = document.createElement("div");
     backupCardElement.classList.add("card");
     backupCardImg = document.createElement("img");
+    backupCardImg.src = "foods/food1-1.jpg";
     backupCardElement.appendChild(backupCardImg);
     mainElement.appendChild(backupCardElement);
 }
