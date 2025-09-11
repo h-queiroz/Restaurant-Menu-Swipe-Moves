@@ -8,7 +8,6 @@ body {
     margin: 0;
     background: #2A7B9B;
     background: linear-gradient(300deg, rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
-    /* overflow-y: hidden; */
 }
 
 /* The Phone Window */
@@ -44,8 +43,33 @@ main .card:first-child {
     z-index: 2;
 }
 
-main .card:last-child {
+/* 
+ * Equivalent to what I expected :last-child would do.
+ * :last-child won't work because I inserted #cart at the end of main
+ * and because a .card isn't the very last element in main, it won't work
+ * */
+main .card:nth-last-child(1 of .card) {
     z-index: -2;
+}
+
+main .card .counter {
+    width: 50px;
+    height: 50px;
+    background-color: #b16b6b;
+    border-radius: 50%;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    transition: 0.5s all ease-in;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+main .card:first-child .counter {
+    z-index: 4;
 }
 
 main .card img {
@@ -84,7 +108,8 @@ main .card img {
     transition: 0.5s all ease-in;
 }
 
-#cart img {
+#cart > img {
+    pointer-events: none; /* Prevents image drag on Firefox */
     width: clamp(20px, 50%, 80px);
     position: absolute;
     top: 50%;
@@ -117,9 +142,26 @@ main .card img {
 #cart #cart-menu ul {
     height: 350px;
     width: 100%;
-    /* background-color: purple; */
     border-radius: 20px;
     border: 2px solid black;
+    padding-left: 0;
+    list-style: none;
+}
+
+#cart #cart-menu ul li {
+    height: 70px;
+    padding: 0 15px;
+    margin-bottom: 5px;
+    border-bottom: 2px solid black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#cart #cart-menu ul li img {
+    width: 50px;
+    height: 50px;
+    border-radius: 30px;
 }
 
 #cart #cart-menu button:last-child {

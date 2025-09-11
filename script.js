@@ -15,9 +15,14 @@ let cartElement = document.querySelector("#cart");
 let cartIcon = cartElement.firstElementChild;
 let cartMenu = cartElement.children[1];
 
+let shoppingList = [];
+
 let currentFoodIndex = 0;
+let backCardFoodIndex;
 let currentImg = 0;
 frontCardImg.src = imgLinks[currentFoodIndex][currentImg];
+
+updateCurrentFoodCounter();
 
 // Swipe Event Listener on Mouse
 let initPosX = 0;
@@ -51,19 +56,34 @@ document.body.addEventListener("mouseup", (event) => {
                     frontCardElement.style.animationName = "disappear-front";
                 }
 
+                setTimeout(() => {
+                    swap();
+                }, 350);
+
             } else {
+                let foundItem = shoppingList.find(food => food.id == currentFoodIndex);
 
                 if(deltaY > 0) {// Swipped UP
-                    console.log("Swipped UP");
+                    if(foundItem == undefined)
+                        shoppingList.push({id: currentFoodIndex, amount: 1});
+                    else
+                        foundItem.amount++;
+
                 } else {        // Swipped DOWN
-                    console.log("Swipped DOWN");
+                    if(foundItem != undefined) {
+                        foundItem.amount--;
+
+                        if(foundItem.amount <= 0)
+                            shoppingList = shoppingList.filter(item => item != foundItem);
+                    }
+
                 }
 
+                updateShoppingListElement();
+                updateCurrentFoodCounter();
+                frontCardElement.style.transform = "translate(0)";
             }
 
-            setTimeout(() => {
-                swap();
-            }, 350);
 
         } else if (deltaX == 0 && deltaY == 0) { // If user simply clicks. I had to set this instead of the "click" event Listener cause even a slighty swipe triggers a "click" which is not what I want.
 
@@ -90,25 +110,45 @@ document.body.addEventListener("mouseup", (event) => {
 mainElement.addEventListener("mousemove", (event) => {
     if(initPosX != 0 && initPosY != 0) {
         let deltaX = initPosX - event.clientX;
-        frontCardElement.style.transform = "rotate(" + (0.5 * -deltaX) + "deg) translate(" + (2.5 * -deltaX) + "px)";
+        let deltaY = initPosY - event.clientY;
 
-        // Dinamically change what is the food on the back card depending on the direction of the swipe
-        let backCardFoodIndex;
-        if(-deltaX < 0){
-            backCardFoodIndex = (currentFoodIndex - 1);
+        // Animation for horizontal swipes
+        if(Math.abs(deltaX) > Math.abs(deltaY)) {
+            frontCardElement.style.transform = "rotate(" + (0.15 * -deltaX) + "deg) translate(" + (-deltaX) + "px)";
 
-            if(currentFoodIndex == 0)
-                backCardFoodIndex = 2;
+            // Dinamically change what is the food on the back card depending on the direction of the swipe
+            if(-deltaX < 0){
+                backCardFoodIndex = (currentFoodIndex - 1);
 
+                if(currentFoodIndex == 0)
+                    backCardFoodIndex = 2;
+
+            } else {
+                backCardFoodIndex = (currentFoodIndex + 1);
+
+                if(currentFoodIndex == 2)
+                    backCardFoodIndex = 0;
+            }
+
+            currentImg = 0;
+            backCardImg.src = imgLinks[backCardFoodIndex][currentImg];
+            updateBackFoodCounter();
+
+        // Animation for vertical swipes
         } else {
-            backCardFoodIndex = (currentFoodIndex + 1);
+            if(deltaY > 0) {
+                if(deltaY > 100)
+                    frontCardElement.style.transform = "translate(0, -100px)";
+                else
+                    frontCardElement.style.transform = "translate(0, -" + deltaY + "px)";
 
-            if(currentFoodIndex == 2)
-                backCardFoodIndex = 0;
+            } else {
+                if(Math.abs(deltaY) > 100)
+                    frontCardElement.style.transform = "translate(0, 100px) scale(0.7)";
+                else
+                    frontCardElement.style.transform = "translate(0, " + -deltaY + "px) scale(0.7)";
+            }
         }
-
-        currentImg = 0;
-        backCardImg.src = imgLinks[backCardFoodIndex][currentImg];
     }
 });
 
@@ -143,19 +183,34 @@ document.body.addEventListener("touchend", (event) => {
                     frontCardElement.style.animationName = "disappear-front";
                 }
 
+                setTimeout(() => {
+                    swap();
+                }, 350);
+
             } else {
+                let foundItem = shoppingList.find(food => food.id == currentFoodIndex);
 
                 if(deltaY > 0) {// Swipped UP
-                    console.log("Swipped UP");
+                    if(foundItem == undefined)
+                        shoppingList.push({id: currentFoodIndex, amount: 1});
+                    else
+                        foundItem.amount++;
+
                 } else {        // Swipped DOWN
-                    console.log("Swipped DOWN");
+                    if(foundItem != undefined) {
+                        foundItem.amount--;
+
+                        if(foundItem.amount <= 0)
+                            shoppingList = shoppingList.filter(item => item != foundItem);
+                    }
+
                 }
 
+                updateShoppingListElement();
+                updateCurrentFoodCounter();
+                frontCardElement.style.transform = "translate(0)";
             }
 
-            setTimeout(() => {
-                swap();
-            }, 350);
 
         // I was going to set the same event for tap touching in the same way
         // as in tap clicking, but for some reason, the "tap on touch" also triggers
@@ -175,25 +230,46 @@ mainElement.addEventListener("touchmove", (event) => {
     event.preventDefault(); // Prevents window scroll
     if(initPosX != 0 && initPosY != 0) {
         let deltaX = initPosX - event.targetTouches[0].clientX;
-        frontCardElement.style.transform = "rotate(" + (0.5 * -deltaX) + "deg) translate(" + (2.5 * -deltaX) + "px)";
+        let deltaY = initPosY - event.targetTouches[0].clientY;
+        // frontCardElement.style.transform = "rotate(" + (0.5 * -deltaX) + "deg) translate(" + (2.5 * -deltaX) + "px)";
 
-        // Dinamically change what is the food on the back card depending on the direction of the swipe
-        let backCardFoodIndex;
-        if(-deltaX < 0){
-            backCardFoodIndex = (currentFoodIndex - 1);
+        // Animation for horizontal swipes
+        if(Math.abs(deltaX) > Math.abs(deltaY)) {
+            frontCardElement.style.transform = "rotate(" + (0.15 * -deltaX) + "deg) translate(" + (-deltaX) + "px)";
 
-            if(currentFoodIndex == 0)
-                backCardFoodIndex = 2;
+            // Dinamically change what is the food on the back card depending on the direction of the swipe
+            if(-deltaX < 0){
+                backCardFoodIndex = (currentFoodIndex - 1);
 
+                if(currentFoodIndex == 0)
+                    backCardFoodIndex = 2;
+
+            } else {
+                backCardFoodIndex = (currentFoodIndex + 1);
+
+                if(currentFoodIndex == 2)
+                    backCardFoodIndex = 0;
+            }
+
+            currentImg = 0;
+            backCardImg.src = imgLinks[backCardFoodIndex][currentImg];
+            updateBackFoodCounter();
+
+        // Animation for vertical swipes
         } else {
-            backCardFoodIndex = (currentFoodIndex + 1);
+            if(deltaY > 0) {
+                if(deltaY > 100)
+                    frontCardElement.style.transform = "translate(0, -100px)";
+                else
+                    frontCardElement.style.transform = "translate(0, -" + deltaY + "px)";
 
-            if(currentFoodIndex == 2)
-                backCardFoodIndex = 0;
+            } else {
+                if(Math.abs(deltaY) > 100)
+                    frontCardElement.style.transform = "translate(0, 100px) scale(0.7)";
+                else
+                    frontCardElement.style.transform = "translate(0, " + -deltaY + "px) scale(0.7)";
+            }
         }
-
-        currentImg = 0;
-        backCardImg.src = imgLinks[backCardFoodIndex][currentImg];
     }
 });
 
@@ -201,8 +277,13 @@ mainElement.addEventListener("touchmove", (event) => {
 function swap() {
     frontCardElement.remove();
     frontCardElement = backCardElement;
+    let counter1 = document.createElement("div");
+    updateCurrentFoodCounter();
     frontCardImg = frontCardElement.children[0];
     backCardElement = mainElement.children[1];
+    let counter2 = document.createElement("div");
+    counter2.classList.add("counter");
+    backCardElement.appendChild(counter2);
     backCardImg = backCardElement.children[0];
     backCardImg.src = "foods/food1-1.jpg";
     backupCardElement = document.createElement("div");
@@ -210,7 +291,6 @@ function swap() {
     backupCardImg = document.createElement("img");
     backupCardImg.src = "foods/food1-1.jpg";
     backupCardElement.appendChild(backupCardImg);
-    // mainElement.appendChild(backupCardElement);
     mainElement.insertBefore(backupCardElement, cartElement);
 }
 
@@ -224,7 +304,8 @@ cartElement.addEventListener("mouseup", (event) => {
         if (deltaX == 0 && deltaY == 0) {
             event.stopPropagation();
 
-            showCartMenu();
+            if(cartElement.clientWidth < 60) // Prevent weird behaviour if menu is already being shown
+                showCartMenu();
         }
 
         initPosX = 0;
@@ -300,3 +381,43 @@ function hideCartMenu() {
 cartElement.addEventListener("mousemove", (event) => {
     event.stopPropagation();
 });
+
+
+function updateShoppingListElement() {
+    let ulElement = document.createElement("ul");
+    shoppingList.forEach(item => {
+        let li = document.createElement("li");
+        let img = document.createElement("img");
+        let span = document.createElement("span");
+        img.src = "foods/food" + (item.id+1) + "-1.jpg";
+        span.textContent = item.amount + "x";
+        li.appendChild(img);
+        li.appendChild(span);
+        ulElement.appendChild(li);
+    });
+    document.querySelector("ul").innerHTML = ulElement.innerHTML;
+};
+
+function updateCurrentFoodCounter() {
+    let foundItem = shoppingList.find(food => food.id == currentFoodIndex);
+
+    let currentCounter = document.querySelector(".counter");
+    if(foundItem != undefined && foundItem.amount > 0) {
+        currentCounter.textContent = foundItem.amount;
+        currentCounter.style.display = "flex";
+    } else
+        currentCounter.style.display = "none";
+};
+
+function updateBackFoodCounter() {
+    let foundItem = shoppingList.find(food => food.id == backCardFoodIndex);
+
+    let backCounter = document.querySelectorAll(".counter")[1];
+    if(backCounter != undefined) {
+        if(foundItem != undefined && foundItem.amount > 0) {
+            backCounter.textContent = foundItem.amount;
+            backCounter.style.display = "flex";
+        } else 
+            backCounter.style.display = "none";
+    }
+};
